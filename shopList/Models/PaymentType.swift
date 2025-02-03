@@ -1,10 +1,9 @@
 import Foundation
 
 enum PaymentType: String, CaseIterable, Codable {
-    case cash = "Cash"
-    case creditCard = "Credit Card"
-    case debitCard = "Debit Card"
-    case digitalWallet = "Digital Wallet"
+    case cash = "Nakit"
+    case creditCard = "Kredi Kartı"
+    case ticket = "Yemek Kartı"
     
     var icon: String {
         switch self {
@@ -12,10 +11,8 @@ enum PaymentType: String, CaseIterable, Codable {
             return "banknote"
         case .creditCard:
             return "creditcard"
-        case .debitCard:
-            return "card"
-        case .digitalWallet:
-            return "wallet.pass"
+        case .ticket:
+            return "fork.knife.circle.fill"
         }
     }
 }

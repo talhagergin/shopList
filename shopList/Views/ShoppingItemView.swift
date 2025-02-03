@@ -28,13 +28,13 @@ struct ShoppingItemView: View {
             }
         }
         .padding(.horizontal)
-        .alert("Enter Price", isPresented: $showingPriceInput) {
-            TextField("Price", value: $item.price, format: .number)
+        .alert("Fiyat Gir", isPresented: $showingPriceInput) {
+            TextField("Fiyat", value: $item.price, format: .number)
                 .keyboardType(.decimalPad)
-            Button("OK", action: {})
-            Button("Cancel", role: .cancel, action: {})
+            Button("Tamam", action: {})
+            Button("İptal", role: .cancel, action: {})
         } message: {
-            Text("Enter the price for \(item.name)")
+            Text("Fiyatını girin \(item.name)")
         }
     }
 }

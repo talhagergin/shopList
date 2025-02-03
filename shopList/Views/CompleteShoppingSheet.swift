@@ -14,30 +14,30 @@ struct CompleteShoppingSheet: View {
             Form {
                 Section {
                     HStack {
-                        Text("Total Items")
+                        Text("Toplam Liste")
                         Spacer()
                         Text("\(list.items.count)")
                             .foregroundColor(.secondary)
                     }
                     
                     HStack {
-                        Text("Completed Items")
+                        Text("Tamamlanan Listeler")
                         Spacer()
                         Text("\(list.items.filter { $0.isCompleted }.count)")
                             .foregroundColor(.secondary)
                     }
                 }
                 
-                Section(header: Text("Payment Details")) {
+                Section(header: Text("Ödeme Detayları")) {
                     HStack {
-                        Text("Total Amount")
+                        Text("Toplam Tutar")
                         Spacer()
-                        TextField("Amount", value: $totalAmount, format: .currency(code: "TRY"))
+                        TextField("Tutar", value: $totalAmount, format: .currency(code: "TRY"))
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
                     }
                     
-                    Picker("Payment Method", selection: $selectedPaymentType) {
+                    Picker("Ödeme Tipi", selection: $selectedPaymentType) {
                         ForEach(PaymentType.allCases, id: \.self) { type in
                             Label(type.rawValue, systemImage: type.icon)
                                 .tag(type)

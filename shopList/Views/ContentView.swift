@@ -19,7 +19,7 @@ struct ContentView: View {
                         HStack {
                             Spacer()
                             VStack(spacing: 4) {
-                                Text("Total Spent")
+                                Text("Toplam Harcama")
                                     .font(.headline)
                                     .foregroundColor(.secondary)
                                 Text(String(format: "%.2f TL", viewModel.getTotalSpent()))
@@ -53,6 +53,7 @@ struct ContentView: View {
                                                 .foregroundColor(.green)
                                         }
                                     }
+                                   
                                 }
                                 
                                 Spacer()
@@ -76,7 +77,7 @@ struct ContentView: View {
                     }
                 } header: {
                     HStack {
-                        Text("Shopping Lists")
+                        Text("Alışveriş Listesi")
                         Spacer()
                         Text("\(viewModel.shoppingLists.count) lists")
                             .font(.caption)
@@ -84,19 +85,19 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle("My Shopping")
+            .navigationTitle("Alışverişlerim")
             .toolbar {
                 Button(action: { showingNewListSheet = true }) {
-                    Label("New List", systemImage: "plus")
+                    Label("Yeni Liste", systemImage: "plus")
                 }
             }
             .sheet(isPresented: $showingNewListSheet) {
                 NavigationView {
                     Form {
                         Section {
-                            TextField("List Title", text: $newListTitle)
+                            TextField("Liste Başlığı", text: $newListTitle)
                         } footer: {
-                            Text("Enter a name for your new shopping list")
+                            Text("Listeniz için bir başlık giriniz.")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -105,7 +106,7 @@ struct ContentView: View {
                             Button(action: createNewList) {
                                 HStack {
                                     Spacer()
-                                    Text("Create List")
+                                    Text("Listeyi Oluştur")
                                         .bold()
                                     Spacer()
                                 }
@@ -113,8 +114,8 @@ struct ContentView: View {
                             .disabled(newListTitle.isEmpty)
                         }
                     }
-                    .navigationTitle("New Shopping List")
-                    .navigationBarItems(trailing: Button("Cancel") {
+                    .navigationTitle("Yeni Alışveriş Listesi")
+                    .navigationBarItems(trailing: Button("İptal") {
                         showingNewListSheet = false
                     })
                 }

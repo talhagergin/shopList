@@ -17,7 +17,7 @@ struct ShoppingListDetailView: View {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(.green)
                                 .font(.title)
-                            Text("Completed")
+                            Text("Tamamlandı")
                                 .font(.headline)
                             Spacer()
                         }
@@ -26,7 +26,7 @@ struct ShoppingListDetailView: View {
                             HStack {
                                 Spacer()
                                 VStack(spacing: 4) {
-                                    Text("Total Amount")
+                                    Text("Toplam Tutar")
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                     Text(String(format: "%.2f TL", total))
@@ -50,7 +50,7 @@ struct ShoppingListDetailView: View {
                 }
             }
             
-            Section(header: Text("Items")) {
+            Section(header: Text("Ürün")) {
                 ForEach(list.items) { item in
                     ShoppingItemView(item: item) {
                         viewModel.toggleItem(item)
@@ -61,7 +61,7 @@ struct ShoppingListDetailView: View {
             if list.completedAt == nil {
                 Section {
                     HStack {
-                        TextField("New item", text: $newItemName)
+                        TextField("Yeni Ürün", text: $newItemName)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                         
                         Button(action: {
@@ -83,7 +83,7 @@ struct ShoppingListDetailView: View {
         .toolbar {
             if list.completedAt == nil {
                 Button(action: { showingCompleteSheet = true }) {
-                    Label("Complete", systemImage: "checkmark.circle")
+                    Label("Tamamla", systemImage: "checkmark.circle")
                 }
             }
         }
