@@ -8,112 +8,58 @@ struct ContentView: View {
     @State private var newListTitle = ""
     
     init(modelContext: ModelContext) {
-        self.viewModel = ShoppingListViewModel(modelContext: modelContext)
+        _viewModel = ObservedObject(wrappedValue: ShoppingListViewModel(modelContext: modelContext))
     }
     
     var body: some View {
         NavigationView {
             List {
-                Section {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(String(format: "%.2f TL", viewModel.getTotalSpent()))
-                            .font(.title)
-                            .foregroundColor(.blue)
-                            .bold()
-                        
-                        ForEach(viewModel.getTotalSpentByPaymentType(), id: \.0) { paymentType, amount in
-                            HStack {
-                                Text(paymentType.rawValue)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                                Text(String(format: "%.2f TL", amount))
-                                    .foregroundColor(.secondary)
-                            }
-                            .font(.caption)
-                        }
-                    }
-                    .padding(.vertical, 8)
-                } header: {
-                    Text("Total Spent")
+                Section(header: Text("Total Spent")) {
+                    Text(String(format: "%.2f TL", viewModel.getTotalSpent()))
+                        .font(.headline)
+                        .foregroundColor(.blue)
                 }
                 
-                Section {
+                Section(header: Text("Shopping Lists")) {
                     ForEach(viewModel.shoppingLists) { list in
                         NavigationLink(destination: ShoppingListDetailView(list: list, viewModel: viewModel)) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                HStack {
-                                    Text(list.title)
-                                        .font(.headline)
-                                    
-                                    Spacer()
-                                    
-                                    if list.completedAt != nil {
-                                        Image(systemName: "checkmark.circle.fill")
-                                            .foregroundColor(.green)
-                                    }
-                                }
-                                
+                            VStack(alignment: .leading) {
+                                Text(list.title)
+                                    .font(.headline)
                                 if let completedAt = list.completedAt {
-                                    Text(completedAt.formatted(date: .abbreviated, time: .shortened))
+                                    Text("Completed: \(completedAt.formatted())")
                                         .font(.caption)
                                         .foregroundColor(.gray)
                                 }
-                                
                                 if let total = list.totalAmount {
-                                    HStack {
-                                        Text(String(format: "%.2f TL", total))
-                                            .foregroundColor(.blue)
-                                        
-                                        if let paymentType = list.paymentType {
-                                            Text("• \(paymentType.rawValue)")
-                                        }
-                                    }
-                                    .font(.caption)
-                                }
-                                
-                                if !list.items.isEmpty {
-                                    Text("\(list.items.filter { $0.isCompleted }.count)/\(list.items.count) items completed")
-                                        .font(.caption2)
-                                        .foregroundColor(.gray)
+                                    Text(String(format: "Total: %.2f TL", total))
+                                        .font(.caption)
+                                        .foregroundColor(.blue)
                                 }
                             }
-                            .padding(.vertical, 4)
                         }
                     }
-                } header: {
-                    Text("Shopping Lists")
                 }
             }
             .navigationTitle("Shopping Lists")
             .toolbar {
-                Button(action: { showingNewListSheet = true }) {
-                    Label("New List", systemImage: "plus")
+                Button("New List") {
+                    showingNewListSheet = true
                 }
             }
             .sheet(isPresented: $showingNewListSheet) {
                 NavigationView {
                     Form {
-                        Section {
-                            TextField("List Title", text: $newListTitle)
-                        }
+                        TextField("List Title", text: $newListTitle)
                         
-                        Section {
-                            Button(action: {
-                                if !newListTitle.isEmpty {
-                                    viewModel.createNewList(title: newListTitle)
-                                    newListTitle = ""
-                                    showingNewListSheet = false
-                                }
-                            }) {
-                                HStack {
-                                    Spacer()
-                                    Text("Create List")
-                                        .bold()
-                                    Spacer()
-                                }
+                        Button("Create") {
+                            if !newListTitle.isEmpty {
+                                viewModel.createNewList(title: newListTitle)
+                                newListTitle = ""
+                                showingNewListSheet = false
                             }
-                            .disabled(newListTitle.isEmpty)
                         }
+                        .disabled(newListTitle.isEmpty)
                     }
                     .navigationTitle("New Shopping List")
                     .navigationBarItems(trailing: Button("Cancel") {

@@ -10,36 +10,28 @@ struct ShoppingItemView: View {
             Button(action: onToggle) {
                 Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(item.isCompleted ? .green : .gray)
-                    .imageScale(.large)
             }
             
-            VStack(alignment: .leading, spacing: 4) {
-                Text(item.name)
-                    .strikethrough(item.isCompleted)
-                    .foregroundColor(item.isCompleted ? .gray : .primary)
-                
-                if let price = item.price {
-                    Text(String(format: "%.2f TL", price))
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                }
-            }
+            Text(item.name)
+                .strikethrough(item.isCompleted)
             
             Spacer()
             
-            Button(action: { showingPriceInput = true }) {
-                Label("Set Price", systemImage: "pencil.circle")
-                    .labelStyle(.iconOnly)
+            if let price = item.price {
+                Text(String(format: "%.2f TL", price))
                     .foregroundColor(.blue)
-                    .imageScale(.large)
+            }
+            
+            Button(action: { showingPriceInput = true }) {
+                Image(systemName: "pencil.circle")
+                    .foregroundColor(.blue)
             }
         }
-        .padding(.vertical, 8)
-        .contentShape(Rectangle())
-        .alert("Set Price", isPresented: $showingPriceInput) {
+        .padding(.horizontal)
+        .alert("Enter Price", isPresented: $showingPriceInput) {
             TextField("Price", value: $item.price, format: .number)
                 .keyboardType(.decimalPad)
-            Button("Save", action: {})
+            Button("OK", action: {})
             Button("Cancel", role: .cancel, action: {})
         } message: {
             Text("Enter the price for \(item.name)")
