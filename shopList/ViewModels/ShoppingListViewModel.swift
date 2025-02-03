@@ -41,8 +41,9 @@ class ShoppingListViewModel: ObservableObject {
         try? modelContext.save()
     }
     
-    func completeList(_ list: ShoppingList, totalAmount: Double) {
+    func completeList(_ list: ShoppingList, totalAmount: Double, paymentType: PaymentType) {
         list.totalAmount = totalAmount
+        list.paymentType = paymentType
         list.completedAt = Date()
         try? modelContext.save()
     }

@@ -6,10 +6,50 @@ struct ShoppingListDetailView: View {
     @StateObject var viewModel: ShoppingListViewModel
     @State private var newItemName = ""
     @State private var showingCompleteSheet = false
-    @State private var totalAmount: Double?
     
     var body: some View {
         List {
+            if list.completedAt != nil {
+                Section {
+                    VStack(spacing: 12) {
+                        HStack {
+                            Spacer()
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                                .font(.title)
+                            Text("Completed")
+                                .font(.headline)
+                            Spacer()
+                        }
+                        
+                        if let total = list.totalAmount {
+                            HStack {
+                                Spacer()
+                                VStack(spacing: 4) {
+                                    Text("Total Amount")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    Text(String(format: "%.2f TL", total))
+                                        .font(.title2)
+                                        .bold()
+                                }
+                                Spacer()
+                            }
+                        }
+                        
+                        if let paymentType = list.paymentType {
+                            HStack {
+                                Spacer()
+                                Label(paymentType.rawValue, systemImage: paymentType.icon)
+                                    .foregroundColor(.blue)
+                                Spacer()
+                            }
+                        }
+                    }
+                    .padding(.vertical, 8)
+                }
+            }
+            
             Section(header: Text("Items")) {
                 ForEach(list.items) { item in
                     ShoppingItemView(item: item) {
@@ -18,14 +58,23 @@ struct ShoppingListDetailView: View {
                 }
             }
             
-            Section {
-                HStack {
-                    TextField("New item", text: $newItemName)
-                    Button("Add") {
-                        if !newItemName.isEmpty {
-                            viewModel.addItem(to: list, name: newItemName)
-                            newItemName = ""
+            if list.completedAt == nil {
+                Section {
+                    HStack {
+                        TextField("New item", text: $newItemName)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                        
+                        Button(action: {
+                            if !newItemName.isEmpty {
+                                viewModel.addItem(to: list, name: newItemName)
+                                newItemName = ""
+                            }
+                        }) {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundColor(.blue)
+                                .font(.title2)
                         }
+                        .disabled(newItemName.isEmpty)
                     }
                 }
             }
@@ -33,32 +82,15 @@ struct ShoppingListDetailView: View {
         .navigationTitle(list.title)
         .toolbar {
             if list.completedAt == nil {
-                Button("Complete Shopping") {
-                    showingCompleteSheet = true
+                Button(action: { showingCompleteSheet = true }) {
+                    Label("Complete", systemImage: "checkmark.circle")
                 }
             }
         }
         .sheet(isPresented: $showingCompleteSheet) {
-            NavigationView {
-                Form {
-                    Section(header: Text("Shopping Total")) {
-                        TextField("Total Amount", value: $totalAmount, format: .currency(code: "TRY"))
-                            .keyboardType(.decimalPad)
-                    }
-                    
-                    Button("Complete Shopping") {
-                        if let amount = totalAmount {
-                            viewModel.completeList(list, totalAmount: amount)
-                            showingCompleteSheet = false
-                        }
-                    }
-                    .disabled(totalAmount == nil)
-                }
-                .navigationTitle("Complete Shopping")
-                .navigationBarItems(trailing: Button("Cancel") {
-                    showingCompleteSheet = false
-                })
-            }
+            CompleteShoppingSheet(isPresented: $showingCompleteSheet,
+                                list: list,
+                                viewModel: viewModel)
         }
     }
 }

@@ -14,52 +14,104 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text("Total Spent")) {
-                    Text(String(format: "%.2f TL", viewModel.getTotalSpent()))
-                        .font(.headline)
-                        .foregroundColor(.blue)
+                Section {
+                    VStack(spacing: 12) {
+                        HStack {
+                            Spacer()
+                            VStack(spacing: 4) {
+                                Text("Total Spent")
+                                    .font(.headline)
+                                    .foregroundColor(.secondary)
+                                Text(String(format: "%.2f TL", viewModel.getTotalSpent()))
+                                    .font(.title)
+                                    .bold()
+                                    .foregroundColor(.blue)
+                            }
+                            Spacer()
+                        }
+                    }
+                    .padding(.vertical, 8)
                 }
                 
-                Section(header: Text("Shopping Lists")) {
+                Section {
                     ForEach(viewModel.shoppingLists) { list in
                         NavigationLink(destination: ShoppingListDetailView(list: list, viewModel: viewModel)) {
-                            VStack(alignment: .leading) {
-                                Text(list.title)
-                                    .font(.headline)
-                                if let completedAt = list.completedAt {
-                                    Text("Completed: \(completedAt.formatted())")
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(list.title)
+                                        .font(.headline)
+                                    
+                                    HStack {
+                                        Image(systemName: "cart")
+                                            .foregroundColor(.secondary)
+                                        Text("\(list.items.count) items")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                        
+                                        if list.completedAt != nil {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .foregroundColor(.green)
+                                        }
+                                    }
                                 }
+                                
+                                Spacer()
+                                
                                 if let total = list.totalAmount {
-                                    Text(String(format: "Total: %.2f TL", total))
-                                        .font(.caption)
-                                        .foregroundColor(.blue)
+                                    VStack(alignment: .trailing, spacing: 4) {
+                                        Text(String(format: "%.2f TL", total))
+                                            .font(.subheadline)
+                                            .bold()
+                                            .foregroundColor(.blue)
+                                        
+                                        if let paymentType = list.paymentType {
+                                            Label("", systemImage: paymentType.icon)
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+                } header: {
+                    HStack {
+                        Text("Shopping Lists")
+                        Spacer()
+                        Text("\(viewModel.shoppingLists.count) lists")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
-            .navigationTitle("Shopping Lists")
+            .navigationTitle("My Shopping")
             .toolbar {
-                Button("New List") {
-                    showingNewListSheet = true
+                Button(action: { showingNewListSheet = true }) {
+                    Label("New List", systemImage: "plus")
                 }
             }
             .sheet(isPresented: $showingNewListSheet) {
                 NavigationView {
                     Form {
-                        TextField("List Title", text: $newListTitle)
-                        
-                        Button("Create") {
-                            if !newListTitle.isEmpty {
-                                viewModel.createNewList(title: newListTitle)
-                                newListTitle = ""
-                                showingNewListSheet = false
-                            }
+                        Section {
+                            TextField("List Title", text: $newListTitle)
+                        } footer: {
+                            Text("Enter a name for your new shopping list")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
-                        .disabled(newListTitle.isEmpty)
+                        
+                        Section {
+                            Button(action: createNewList) {
+                                HStack {
+                                    Spacer()
+                                    Text("Create List")
+                                        .bold()
+                                    Spacer()
+                                }
+                            }
+                            .disabled(newListTitle.isEmpty)
+                        }
                     }
                     .navigationTitle("New Shopping List")
                     .navigationBarItems(trailing: Button("Cancel") {
@@ -67,6 +119,14 @@ struct ContentView: View {
                     })
                 }
             }
+        }
+    }
+    
+    private func createNewList() {
+        if !newListTitle.isEmpty {
+            viewModel.createNewList(title: newListTitle)
+            newListTitle = ""
+            showingNewListSheet = false
         }
     }
 }

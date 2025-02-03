@@ -6,6 +6,7 @@ class ShoppingList {
     var title: String
     var items: [ShoppingItem]
     var totalAmount: Double?
+    var paymentType: PaymentType?
     var createdAt: Date
     var completedAt: Date?
     
